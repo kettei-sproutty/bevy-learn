@@ -1,13 +1,17 @@
 use anyhow::Context;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
+use bevy_editor_pls::prelude::*;
+
 use rand::prelude::*;
 
 #[derive(Component)]
 struct Player {}
 
 #[derive(Component)]
-struct Enemy {}
+struct Enemy {
+    direction: Vec2,
+}
 
 fn spawn_player(
     mut commands: Commands,
@@ -67,10 +71,83 @@ fn spawn_enemy(
             ..default()
         };
 
-        let enemy = Enemy {};
+        let random_x_movement = random::<f32>();
+        let random_y_movement = random::<f32>();
+
+        let direction = Vec2::new(random_x_movement, random_y_movement).normalize();
+
+        let enemy = Enemy { direction };
 
         commands.spawn((sprite, enemy));
     })
+}
+
+const ENEMY_MOVEMENT_SPEED: f32 = 250.;
+const ENEMY_SPRITE_SIZE: f32 = 128.;
+
+fn enemy_movement(mut enemy_query: Query<(&mut Transform, &Enemy)>, time: Res<Time>) {
+    for (mut transform, enemy) in enemy_query.iter_mut() {
+        let direction = Vec3::new(enemy.direction.x, enemy.direction.y, 0.);
+        transform.translation += direction * ENEMY_MOVEMENT_SPEED * time.delta_seconds();
+    }
+}
+
+fn change_enemy_movement(
+    mut enemy_query: Query<(&Transform, &mut Enemy)>,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+) {
+    let window = window_query
+        .get_single()
+        .with_context(|| "Cannot get window")
+        .unwrap();
+
+    let half_enemy_size: f32 = ENEMY_SPRITE_SIZE / 2.;
+    let minimum = 0. + half_enemy_size;
+    let x_maximum = window.width() - half_enemy_size;
+    let y_maximum = window.height() - half_enemy_size;
+
+    for (transform, mut enemy) in enemy_query.iter_mut() {
+        let translation = transform.translation;
+        if translation.x < minimum || translation.x > x_maximum {
+            enemy.direction.x *= -1.;
+        }
+        if translation.y < minimum || translation.y > y_maximum {
+            enemy.direction.y *= -1.;
+        }
+    }
+}
+
+fn confine_enemy_movement(
+    mut enemy_query: Query<(&mut Transform, &Enemy)>,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+) {
+    let window = window_query
+        .get_single()
+        .with_context(|| "Cannot find window")
+        .unwrap();
+
+    for (mut transform, enemy) in enemy_query.iter_mut() {
+        let half_enemy_size = ENEMY_SPRITE_SIZE / 2.;
+        let minimum = 0. + half_enemy_size;
+        let x_maximum = window.width() - half_enemy_size;
+        let y_maximum = window.height() - half_enemy_size;
+
+        if transform.translation.x < minimum {
+            transform.translation.x = minimum
+        }
+
+        if transform.translation.x > x_maximum {
+            transform.translation.x = x_maximum
+        }
+
+        if transform.translation.y < minimum {
+            transform.translation.y = minimum
+        }
+
+        if transform.translation.y > y_maximum {
+            transform.translation.y = y_maximum
+        }
+    }
 }
 
 const PLAYER_MOVEMENT_SPEED: f32 = 500.;
@@ -148,7 +225,11 @@ fn main() {
         .add_startup_system(spawn_enemy)
         .add_startup_system(spawn_camera)
         .add_plugins(DefaultPlugins)
+        .add_plugin(EditorPlugin::default())
         .add_system(player_movement)
         .add_system(confine_player_movement)
+        .add_system(enemy_movement)
+        .add_system(change_enemy_movement)
+        .add_system(confine_enemy_movement)
         .run();
 }
