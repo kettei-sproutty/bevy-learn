@@ -3,6 +3,7 @@ use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
 use crate::errors::NO_WINDOW_ERROR;
+use crate::globals::SPRITE_BALL_DIR;
 
 use crate::player::components::Player;
 
@@ -23,7 +24,7 @@ pub fn spawn_player(
 
     let sprite = SpriteBundle {
         transform: Transform::from_xyz(center_x, center_y, 0.),
-        texture: asset_server.load("sprites/ball/ball_blue_large_alt.png"),
+        texture: asset_server.load(format!("{}/{}", SPRITE_BALL_DIR, "ball_blue_large_alt.png")),
         ..default()
     };
 
