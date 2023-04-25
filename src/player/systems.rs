@@ -4,24 +4,9 @@ use bevy::window::PrimaryWindow;
 
 use crate::errors::NO_WINDOW_ERROR;
 
-#[derive(Component)]
-pub struct Player {
-    pub is_invincible: bool,
-    pub movement_speed: f32,
-    pub sprite_size: f32,
-}
+use crate::player::components::Player;
 
-impl Default for Player {
-    fn default() -> Self {
-        Self {
-            is_invincible: true,
-            movement_speed: 500.,
-            sprite_size: 128.,
-        }
-    }
-}
-
-fn spawn_player(
+pub fn spawn_player(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>,
@@ -45,7 +30,7 @@ fn spawn_player(
     commands.spawn((sprite, player));
 }
 
-fn player_movement(
+pub fn player_movement(
     keyboard_input: Res<Input<KeyCode>>,
     mut player_query: Query<(&mut Transform, &Player), With<Player>>,
     time: Res<Time>,
@@ -81,7 +66,7 @@ fn player_movement(
     }
 }
 
-fn confine_player_movement(
+pub fn confine_player_movement(
     window_query: Query<&Window, With<PrimaryWindow>>,
     mut player_query: Query<(&mut Transform, &Player), With<Player>>,
 ) {
@@ -116,67 +101,5 @@ fn confine_player_movement(
         }
 
         player_transform.translation = player_translation;
-    }
-}
-
-fn handle_player_collision() {
-    ()
-}
-
-#[derive(Resource)]
-struct PlayerTimer {
-    timer: Timer,
-}
-
-impl Default for PlayerTimer {
-    fn default() -> Self {
-        let timer = Timer::from_seconds(2.5, TimerMode::Once);
-
-        Self { timer }
-    }
-}
-
-// TODO: Move to event
-fn toggle_player_invincibility(
-    mut _player_query: Query<&mut Player>,
-    _player_timer: Res<PlayerTimer>,
-) {
-    // if let Ok(mut player) = player_query.get_single_mut() {
-    //     if player_timer.timer.finished() {
-    //         // TODO: Add visual effect
-    //         player.is_invincible = false;
-    //     }
-    // }
-}
-
-fn start_player_timer_tick(mut player_time: ResMut<PlayerTimer>, time: Res<Time>) {
-    player_time.timer.tick(time.delta());
-}
-
-pub struct PlayerPlugin {}
-
-impl Default for PlayerPlugin {
-    fn default() -> Self {
-        Self {}
-    }
-}
-
-impl Plugin for PlayerPlugin {
-    fn build(&self, app: &mut App) {
-        app.add_startup_system(spawn_player)
-            .init_resource::<PlayerTimer>()
-            .add_system(player_movement)
-            .add_system(start_player_timer_tick)
-            .add_system(confine_player_movement)
-            .add_system(toggle_player_invincibility)
-            .add_system(handle_player_collision);
-    }
-
-    fn name(&self) -> &str {
-        "PlayerPlugin"
-    }
-
-    fn is_unique(&self) -> bool {
-        true
     }
 }

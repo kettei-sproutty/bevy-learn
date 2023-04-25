@@ -3,12 +3,14 @@ use bevy::app::AppExit;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
-mod components;
 mod constants;
+mod enemy;
 mod errors;
+mod player;
 
-use crate::components::{enemy::EnemyPlugin, player::PlayerPlugin};
+use crate::enemy::plugins::EnemyPlugin;
 use crate::errors::NO_WINDOW_ERROR;
+use crate::player::plugins::PlayerPlugin;
 
 fn exit_game(keyboard: Res<Input<KeyCode>>, mut app_exit_event_writer: EventWriter<AppExit>) {
     if keyboard.just_pressed(KeyCode::Escape) {

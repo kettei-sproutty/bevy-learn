@@ -1,4 +1,6 @@
 use crate::constants::{AUDIO_IMPACT_DIR, SPRITE_BALL_DIR};
+use crate::enemy::components::{Enemy, EnemyDifficultyEnum};
+use crate::enemy::resources::EnemyTimer;
 use crate::errors::NO_WINDOW_ERROR;
 use anyhow::Context;
 use bevy::prelude::*;
@@ -7,37 +9,7 @@ use rand::random;
 
 const INITIAL_ENEMY_NUMBER: usize = 5;
 
-pub enum EnemyDifficultyEnum {
-    Easy,
-    Medium,
-    Hard,
-}
-
-#[derive(Component)]
-pub struct Enemy {
-    pub direction: Vec2,
-    pub difficulty: EnemyDifficultyEnum,
-    pub movement_speed: f32,
-    pub size: f32,
-}
-
-impl Default for Enemy {
-    fn default() -> Self {
-        let random_x = random::<f32>();
-        let random_y = random::<f32>();
-
-        let direction = Vec2::new(random_x, random_y).normalize();
-
-        Self {
-            direction,
-            difficulty: EnemyDifficultyEnum::Easy,
-            movement_speed: 200.0,
-            size: 128.,
-        }
-    }
-}
-
-fn enemy_texture_handler(enemy: &Enemy, asset_server: &Res<AssetServer>) -> Handle<Image> {
+pub fn enemy_texture_handler(enemy: &Enemy, asset_server: &Res<AssetServer>) -> Handle<Image> {
     match enemy.difficulty {
         EnemyDifficultyEnum::Easy => {
             asset_server.load(format!("{}/{}", SPRITE_BALL_DIR, "ball_red_large.png"))
@@ -51,7 +23,7 @@ fn enemy_texture_handler(enemy: &Enemy, asset_server: &Res<AssetServer>) -> Hand
     }
 }
 
-fn spawn_enemies(
+pub fn spawn_enemies(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>,
@@ -80,14 +52,17 @@ fn spawn_enemies(
     });
 }
 
-fn enemy_movement(mut enemy_query: Query<(&mut Transform, &Enemy), With<Enemy>>, time: Res<Time>) {
+pub fn enemy_movement(
+    mut enemy_query: Query<(&mut Transform, &Enemy), With<Enemy>>,
+    time: Res<Time>,
+) {
     for (mut transform, enemy) in enemy_query.iter_mut() {
         let direction = Vec3::new(enemy.direction.x, enemy.direction.y, 0.);
         transform.translation += direction * enemy.movement_speed * time.delta_seconds();
     }
 }
 
-fn update_enemy_direction(
+pub fn update_enemy_direction(
     mut enemy_query: Query<(&Transform, &mut Enemy)>,
     window_query: Query<&Window, With<PrimaryWindow>>,
     audio: Res<Audio>,
@@ -128,7 +103,7 @@ fn update_enemy_direction(
     }
 }
 
-fn confine_enemy_movement(
+pub fn confine_enemy_movement(
     mut enemy_query: Query<(&mut Transform, &Enemy), With<Enemy>>,
     window_query: Query<&Window, With<PrimaryWindow>>,
 ) {
@@ -161,24 +136,11 @@ fn confine_enemy_movement(
     }
 }
 
-#[derive(Resource)]
-struct EnemyTimer {
-    timer: Timer,
-}
-
-impl Default for EnemyTimer {
-    fn default() -> Self {
-        let timer = Timer::from_seconds(10., TimerMode::Repeating);
-
-        Self { timer }
-    }
-}
-
-fn spawn_enemy_timer(mut enemy_timer_spawn: ResMut<EnemyTimer>, time: Res<Time>) {
+pub fn spawn_enemy_timer(mut enemy_timer_spawn: ResMut<EnemyTimer>, time: Res<Time>) {
     enemy_timer_spawn.timer.tick(time.delta());
 }
 
-fn spawn_enemy_over_time(
+pub fn spawn_enemy_over_time(
     mut commands: Commands,
     enemy_timer: Res<EnemyTimer>,
     window_query: Query<&Window, With<PrimaryWindow>>,
@@ -204,25 +166,5 @@ fn spawn_enemy_over_time(
         };
 
         commands.spawn((sprite, enemy));
-    }
-}
-
-pub struct EnemyPlugin {}
-
-impl Plugin for EnemyPlugin {
-    fn build(&self, app: &mut App) {
-        app.add_startup_system(spawn_enemies)
-            .init_resource::<EnemyTimer>()
-            .add_system(enemy_movement)
-            .add_system(confine_enemy_movement)
-            .add_system(update_enemy_direction)
-            .add_system(spawn_enemy_timer)
-            .add_system(spawn_enemy_over_time);
-    }
-}
-
-impl Default for EnemyPlugin {
-    fn default() -> Self {
-        Self {}
     }
 }
