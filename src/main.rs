@@ -3,7 +3,6 @@ use bevy_rapier2d::prelude::*;
 
 mod camera;
 mod enemy;
-mod errors;
 mod globals;
 mod player;
 mod states;

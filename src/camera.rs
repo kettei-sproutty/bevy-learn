@@ -1,4 +1,4 @@
-use crate::errors::NO_WINDOW_ERROR;
+use crate::globals::NO_WINDOW_ERROR;
 use anyhow::Context;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;

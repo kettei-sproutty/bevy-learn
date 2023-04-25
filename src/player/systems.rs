@@ -3,8 +3,7 @@ use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use bevy_rapier2d::prelude::{Collider, RapierConfiguration, RigidBody, Velocity};
 
-use crate::errors::NO_WINDOW_ERROR;
-use crate::globals::SPRITE_BALL_DIR;
+use crate::globals::{NO_WINDOW_ERROR, SPRITE_BALL_DIR};
 
 use crate::player::Player;
 
