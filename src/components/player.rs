@@ -94,7 +94,7 @@ fn confine_player_movement(
         let half_player_size = player.sprite_size / 2.;
         let x_minimum = 0. + half_player_size;
         let x_maximum = window.width() - half_player_size;
-        let y_minimum = 0. - half_player_size;
+        let y_minimum = 0. + half_player_size;
         let y_maximum = window.height() - half_player_size;
 
         let mut player_translation = player_transform.translation;

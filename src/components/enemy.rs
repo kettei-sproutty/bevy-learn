@@ -51,15 +51,24 @@ fn enemy_texture_handler(enemy: &Enemy, asset_server: &Res<AssetServer>) -> Hand
     }
 }
 
-fn spawn_enemies(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn spawn_enemies(
+    mut commands: Commands,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+    asset_server: Res<AssetServer>,
+) {
+    let window = window_query
+        .get_single()
+        .with_context(|| NO_WINDOW_ERROR)
+        .unwrap();
+
     let enemy_spawner_range = 0..INITIAL_ENEMY_NUMBER;
 
     enemy_spawner_range.for_each(|_| {
         let enemy = Enemy::default();
         let texture = enemy_texture_handler(&enemy, &asset_server);
 
-        let random_x = random::<f32>();
-        let random_y = random::<f32>();
+        let random_x = random::<f32>() * window.width();
+        let random_y = random::<f32>() * window.height();
 
         let sprite = SpriteBundle {
             transform: Transform::from_xyz(random_x, random_y, 0.),
@@ -98,11 +107,13 @@ fn update_enemy_direction(
         let mut is_direction_changed: bool = false;
 
         let translation = transform.translation;
-        if translation.x < minimum || translation.x > x_maximum {
+
+        if translation.x <= minimum || translation.x >= x_maximum {
             enemy.direction.x *= -1.;
             is_direction_changed = true;
         }
-        if translation.y < minimum || translation.y > y_maximum {
+
+        if translation.y <= minimum || translation.y >= y_maximum {
             enemy.direction.y *= -1.;
             is_direction_changed = true;
         }
@@ -127,7 +138,7 @@ fn confine_enemy_movement(
         .unwrap();
 
     for (mut transform, enemy) in enemy_query.iter_mut() {
-        let half_enemy_size = enemy.size;
+        let half_enemy_size = enemy.size / 2.;
         let minimum = 0. + half_enemy_size;
         let x_maximum = window.width() - half_enemy_size;
         let y_maximum = window.height() - half_enemy_size;
@@ -203,8 +214,8 @@ impl Plugin for EnemyPlugin {
         app.add_startup_system(spawn_enemies)
             .init_resource::<EnemyTimer>()
             .add_system(enemy_movement)
-            .add_system(update_enemy_direction)
             .add_system(confine_enemy_movement)
+            .add_system(update_enemy_direction)
             .add_system(spawn_enemy_timer)
             .add_system(spawn_enemy_over_time);
     }
