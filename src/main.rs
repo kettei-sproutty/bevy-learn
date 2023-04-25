@@ -2,6 +2,7 @@ use anyhow::Context;
 use bevy::app::AppExit;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
+use bevy_rapier2d::prelude::*;
 
 mod enemy;
 mod errors;
@@ -39,5 +40,7 @@ fn main() {
         .add_plugin(EnemyPlugin::default())
         .add_plugins(DefaultPlugins)
         .add_system(exit_game)
+        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(100.0))
+        .add_plugin(RapierDebugRenderPlugin::default())
         .run();
 }
