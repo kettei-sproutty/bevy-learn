@@ -337,6 +337,50 @@ fn update_score(score: Res<Score>) {
     }
 }
 
+const STAR_SPAWN_DURATION: f32 = 1.;
+#[derive(Resource)]
+struct SpawnStarTimer {
+    timer: Timer,
+}
+
+impl Default for SpawnStarTimer {
+    fn default() -> Self {
+        let timer = Timer::from_seconds(STAR_SPAWN_DURATION, TimerMode::Repeating);
+
+        Self { timer }
+    }
+}
+
+fn timer_tick(time: Res<Time>, mut star_spawn_timer: ResMut<SpawnStarTimer>) {
+    star_spawn_timer.timer.tick(time.delta());
+}
+
+fn spawn_stars_over_time(
+    mut commands: Commands,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+    asset_server: Res<AssetServer>,
+    star_spawn_timer: Res<SpawnStarTimer>,
+) {
+    if star_spawn_timer.timer.finished() {
+        let window = window_query.get_single().unwrap();
+
+        let star_x = random::<f32>() * window.height();
+        let star_y = random::<f32>() * window.width();
+
+        let asset = asset_server.load("sprites/ball/star.png");
+
+        let sprite = SpriteBundle {
+            transform: Transform::from_xyz(star_x, star_y, 0.),
+            texture: asset,
+            ..default()
+        };
+
+        let star = Star {};
+
+        commands.spawn((sprite, star));
+    }
+}
+
 fn main() {
     App::new()
         .add_startup_system(spawn_player)
@@ -346,6 +390,7 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugin(EditorPlugin::default())
         .init_resource::<Score>()
+        .init_resource::<SpawnStarTimer>()
         .add_system(player_movement)
         .add_system(confine_player_movement)
         .add_system(enemy_movement)
@@ -354,5 +399,7 @@ fn main() {
         .add_system(enemy_hit_player)
         .add_system(player_hit_star)
         .add_system(update_score)
+        .add_system(timer_tick)
+        .add_system(spawn_stars_over_time)
         .run();
 }
