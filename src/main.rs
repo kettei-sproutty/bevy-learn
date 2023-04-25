@@ -8,9 +8,9 @@ mod enemy;
 mod errors;
 mod player;
 
-use crate::enemy::plugins::EnemyPlugin;
+use crate::enemy::EnemyPlugin;
 use crate::errors::NO_WINDOW_ERROR;
-use crate::player::plugins::PlayerPlugin;
+use crate::player::PlayerPlugin;
 
 fn exit_game(keyboard: Res<Input<KeyCode>>, mut app_exit_event_writer: EventWriter<AppExit>) {
     if keyboard.just_pressed(KeyCode::Escape) {
