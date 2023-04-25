@@ -3,9 +3,9 @@ use bevy::app::AppExit;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
-mod constants;
 mod enemy;
 mod errors;
+mod globals;
 mod player;
 
 use crate::enemy::EnemyPlugin;

@@ -1,7 +1,7 @@
-use crate::constants::{AUDIO_IMPACT_DIR, SPRITE_BALL_DIR};
 use crate::enemy::components::{Enemy, EnemyDifficultyEnum};
 use crate::enemy::resources::EnemyTimer;
 use crate::errors::NO_WINDOW_ERROR;
+use crate::globals::{AUDIO_IMPACT_DIR, SPRITE_BALL_DIR};
 use anyhow::Context;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
