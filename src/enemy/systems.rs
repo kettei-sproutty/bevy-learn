@@ -1,11 +1,12 @@
-use crate::enemy::components::{Enemy, EnemyDifficultyEnum};
-use crate::enemy::resources::EnemyTimer;
-use crate::errors::NO_WINDOW_ERROR;
-use crate::globals::{AUDIO_IMPACT_DIR, SPRITE_BALL_DIR};
 use anyhow::Context;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use rand::random;
+
+use crate::enemy::components::{Enemy, EnemyDifficultyEnum};
+use crate::enemy::resources::EnemyTimer;
+use crate::errors::NO_WINDOW_ERROR;
+use crate::globals::{AUDIO_IMPACT_DIR, INITIAL_ENEMY_NUMBER, SPRITE_BALL_DIR};
 
 pub fn enemy_texture_handler(enemy: &Enemy, asset_server: &Res<AssetServer>) -> Handle<Image> {
     match enemy.difficulty {
