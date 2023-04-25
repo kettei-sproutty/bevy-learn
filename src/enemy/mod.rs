@@ -7,7 +7,7 @@ mod systems;
 use crate::enemy::resources::EnemyTimer;
 use crate::enemy::systems::*;
 
-pub struct EnemyPlugin {}
+pub struct EnemyPlugin;
 
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {

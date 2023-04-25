@@ -7,13 +7,7 @@ use crate::player::systems::*;
 #[derive(Component)]
 pub struct Player(f32);
 
-pub struct PlayerPlugin {}
-
-impl Default for PlayerPlugin {
-    fn default() -> Self {
-        Self {}
-    }
-}
+pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {

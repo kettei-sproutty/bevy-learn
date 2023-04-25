@@ -10,9 +10,11 @@ Last lesson followed was lesson 6, [code here](https://github.com/kettei-sproutt
 
 ## Todos:
 
-- [ ] Refactoring (Lesson 7)
-- [ ] Add rapier for collision instead
+- [x] Refactoring (Lesson 7)
 - [ ] Add system set (lesson 8)
+- [x] Add rapier
+- [ ] Handle movement using Rapier
+- [ ] Handle collision using Rapier
 - [ ] Add states and run conditions (lesson 9)
 - [ ] Add UI (lesson 10)
 
