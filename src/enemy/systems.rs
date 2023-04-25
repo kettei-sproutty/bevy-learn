@@ -7,8 +7,6 @@ use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use rand::random;
 
-const INITIAL_ENEMY_NUMBER: usize = 5;
-
 pub fn enemy_texture_handler(enemy: &Enemy, asset_server: &Res<AssetServer>) -> Handle<Image> {
     match enemy.difficulty {
         EnemyDifficultyEnum::Easy => {
