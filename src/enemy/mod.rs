@@ -20,9 +20,3 @@ impl Plugin for EnemyPlugin {
             .add_system(spawn_enemy_over_time);
     }
 }
-
-impl Default for EnemyPlugin {
-    fn default() -> Self {
-        Self {}
-    }
-}
