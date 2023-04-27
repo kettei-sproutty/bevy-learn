@@ -1,7 +1,8 @@
+use crate::enemy::Enemy;
 use anyhow::Context;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
-use bevy_rapier2d::prelude::{Collider, RapierConfiguration, RigidBody, Velocity};
+use bevy_rapier2d::prelude::*;
 
 use crate::globals::{NO_WINDOW_ERROR, SPRITE_BALL_DIR};
 
@@ -10,9 +11,14 @@ use crate::player::Player;
 pub fn spawn_player(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
+    player_query: Query<&Player, With<Player>>,
     asset_server: Res<AssetServer>,
     mut rapier_config: ResMut<RapierConfiguration>,
 ) {
+    if let Ok(_) = player_query.get_single() {
+        return ();
+    }
+
     rapier_config.gravity = Vec2::ZERO;
 
     let window = window_query
@@ -23,7 +29,7 @@ pub fn spawn_player(
     let center_x = window.width() / 2.;
     let center_y = window.height() / 2.;
 
-    let player = Player(500.);
+    let player = Player(2000.);
 
     let sprite_size: f32 = 128.;
 
@@ -65,5 +71,22 @@ pub fn player_movement(
         }
 
         velocity.linvel = move_delta * player.0;
+    }
+}
+
+pub fn display_intersection_info(
+    mut commands: Commands,
+    rapier_context: Res<RapierContext>,
+    player_query: Query<(Entity, &Collider), With<Player>>,
+    enemy_query: Query<(Entity, &Collider), With<Enemy>>,
+) {
+    if let Ok((player_entity, player_collider)) = player_query.get_single() {
+        for (enemy_entity, enemy_collider) in enemy_query.iter() {
+            if let Some(contact_pair) = rapier_context.contact_pair(player_entity, enemy_entity) {
+                println!("E{:?} and P{:?} collided.", enemy_entity, player_entity);
+                // commands.entity(player_entity).despawn();
+                println!("Game Over");
+            }
+        }
     }
 }
