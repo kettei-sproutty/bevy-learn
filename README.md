@@ -2,6 +2,22 @@
 
 This is a repo following the tutorial made by [Jacques](https://www.youtube.com/@jacques-dev) on his YouTube channel.
 
+## Update
+
+After [Lesson 7](https://www.youtube.com/watch?v=gy2G63SA-W8) this repo started following a different path from the tutorial provided by Jacques, still following his lessons.
+
+Last lesson followed was lesson 6, [code here](https://github.com/kettei-sproutty/bevy-learn/tree/v6) tagged as v6;
+
+## Todos:
+
+- [x] Refactoring (Lesson 7)
+- [ ] Add system set (lesson 8)
+- [x] Add rapier
+- [ ] Handle movement using Rapier
+- [ ] Handle collision using Rapier
+- [ ] Add states and run conditions (lesson 9)
+- [ ] Add UI (lesson 10)
+
 ## How to run
 
  
